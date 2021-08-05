@@ -19,6 +19,7 @@ movies.post('/', celebrate({
     thumbnail: Joi.string().required().pattern(/https?:\/\/(?:[-\w]+\.)?([-\w]+)\.\w+(?:\.\w+)?\/?.*/i),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
+    movieId: Joi.string().required(),
   }),
 }), createMovie);
 movies.delete('/:movieId', celebrate({
@@ -27,4 +28,4 @@ movies.delete('/:movieId', celebrate({
   }),
 }), removeMovie);
 
-module.exports = movies;
+module.exports = { movies };

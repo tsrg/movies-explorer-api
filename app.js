@@ -6,11 +6,12 @@ const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi } = require('celebrate');
-const { users } = require('./routes/users');
 const cors = require('./middlewares/cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createNewUser, logout } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const { users } = require('./routes/users');
+const { movies } = require('./routes/movies');
 const notFound = require('./routes/notFound');
 const catchErrors = require('./errors/catchErrors');
 
@@ -59,6 +60,7 @@ app.use('/logout', logout);
 app.use(auth);
 
 app.use('/users', users);
+app.use('/movies', movies);
 app.use('*', notFound);
 
 app.use(errorLogger);
