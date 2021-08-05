@@ -11,6 +11,8 @@ const cors = require('./middlewares/cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createNewUser, logout } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const notFound = require('./routes/notFound');
+const catchErrors = require('./errors/catchErrors');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -57,10 +59,13 @@ app.use('/logout', logout);
 app.use(auth);
 
 app.use('/users', users);
+app.use('*', notFound);
 
 app.use(errorLogger);
 
 app.use(errors());
+
+app.use(catchErrors);
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
