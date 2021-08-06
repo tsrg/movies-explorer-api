@@ -5,14 +5,9 @@ const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
-const { celebrate, Joi } = require('celebrate');
 const cors = require('./middlewares/cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const { login, createNewUser, logout } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-const { users } = require('./routes/users');
-const { movies } = require('./routes/movies');
-const notFound = require('./routes/notFound');
+const routes = require('./routes/index');
 const catchErrors = require('./errors/catchErrors');
 
 const { PORT = 3000 } = process.env;
@@ -35,38 +30,11 @@ const limiter = rateLimit({
 });
 
 app.use(cors);
-
 app.use(requestLogger);
-
 app.use(limiter);
-
-app.use('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(4),
-  }),
-}), login);
-
-app.use('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-    name: Joi.string().min(2).max(30),
-  }),
-}), createNewUser);
-
-app.use('/logout', logout);
-
-app.use(auth);
-
-app.use('/users', users);
-app.use('/movies', movies);
-app.use('*', notFound);
-
+app.use('/', routes);
 app.use(errorLogger);
-
 app.use(errors());
-
 app.use(catchErrors);
 
 app.listen(PORT, () => {
