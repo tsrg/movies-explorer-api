@@ -19,12 +19,12 @@ movies.post('/', celebrate({
     thumbnail: Joi.string().required().pattern(/https?:\/\/(?:[-\w]+\.)?([-\w]+)\.\w+(?:\.\w+)?\/?.*/i),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
-    movieId: Joi.string().required(),
+    movieId: Joi.number().required(),
   }),
 }), createMovie);
 movies.delete('/:movieId', celebrate({
   params: Joi.object().keys({
-    movieId: Joi.string().base64({ paddingRequired: false }).length(24),
+    movieId: Joi.string().hex().length(24),
   }),
 }), removeMovie);
 

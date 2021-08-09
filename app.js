@@ -10,28 +10,27 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 const routes = require('./routes/index');
 const catchErrors = require('./errors/catchErrors');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, DB, NODE_ENV } = process.env;
+const { limeterConf, mongoDB } = require('./utils/constants');
+
 const app = express();
 
+const limiter = rateLimit(limeterConf);
+
+app.use(requestLogger);
+app.use(limiter);
 app.use(helmet());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/moviesdb', {
+mongoose.connect(NODE_ENV === 'production' ? DB : mongoDB, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
 });
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
-
 app.use(cors);
-app.use(requestLogger);
-app.use(limiter);
 app.use('/', routes);
 app.use(errorLogger);
 app.use(errors());
