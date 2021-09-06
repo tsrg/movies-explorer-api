@@ -1,6 +1,6 @@
 const allowedCors = [
-  'https://tryahalov.students.nomoredomains.monster',
-  'http://tryahalov.students.nomoredomains.monster',
+  'https://tsg.nomoredomains.monster',
+  'http://tsg.nomoredomains.monster',
   'localhost:3000',
   'localhost:3001',
   'http://localhost:3000',

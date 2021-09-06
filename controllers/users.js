@@ -8,32 +8,6 @@ const ConflictError = require('../errors/conflict-err');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const createNewUser = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10)
-    .then((hash) => User.create({
-      email: req.body.email,
-      password: hash,
-      name: req.body.name,
-      about: req.body.about,
-      avatar: req.body.avatar,
-    }))
-    .then((user) => {
-      res.send({
-        _id: user._id,
-        email: user.email,
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-      });
-    })
-    .catch((err) => {
-      if (err.name === 'MongoError' && err.code === 11000) {
-        return next(new ConflictError('Такой пользователь уже есть в базе'));
-      }
-      return next(err);
-    });
-};
-
 const getUserInfo = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(new NotFoundError('Пользователь не найден'))
@@ -80,6 +54,30 @@ const login = (req, res, next) => {
         }).status(200).send({ JWT: token });
     })
     .catch(next);
+};
+
+const createNewUser = (req, res, next) => {
+  bcrypt.hash(req.body.password, 10)
+    .then((hash) => User.create({
+      email: req.body.email,
+      password: hash,
+      name: req.body.name,
+    }))
+    .then((user) => {
+      const id = user._id;
+      const token = jwt.sign({ id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
+      return res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+        }).status(200).send({ JWT: token });
+    })
+    .catch((err) => {
+      if (err.name === 'MongoError' && err.code === 11000) {
+        return next(new ConflictError('Такой пользователь уже есть в базе'));
+      }
+      return next(err);
+    });
 };
 
 const logout = (req, res, next) => {
