@@ -25,11 +25,6 @@ const movieSchema = new mongoose.Schema({
   image: {
     type: String,
     required: true,
-    validate: {
-      validator: (value) => {
-        validator.isURL(value, { require_protocol: true });
-      },
-    },
   },
   trailer: {
     type: String,
@@ -43,11 +38,6 @@ const movieSchema = new mongoose.Schema({
   thumbnail: {
     type: String,
     required: true,
-    validate: {
-      validator: (value) => {
-        validator.isURL(value, { require_protocol: true });
-      },
-    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -56,7 +46,6 @@ const movieSchema = new mongoose.Schema({
   },
   movieId: {
     type: Number,
-    unique: true,
     required: true,
   },
   nameRU: {
